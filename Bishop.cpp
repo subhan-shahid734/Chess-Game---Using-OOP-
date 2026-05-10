@@ -1,28 +1,37 @@
 #include "Bishop.h"
 #include <cstdlib>
-
-Bishop::Bishop(char c) :Piece(c) {}
-
-bool Bishop::isWhite() { return color == 'W'; }
-
-char Bishop::getSymbol() { return (color == 'W') ? 'B' : 'b'; }
-
-bool Bishop::is_valid_move(int sx, int sy, int ex, int ey, Piece* board[8][8]) {
-
-    if (abs(ex - sx) != abs(ey - sy)) return false;
-
-    int r = (ex > sx) ? 1 : -1;
-    int c = (ey > sy) ? 1 : -1;
-
-    int i = sx + r, j = sy + c;
-
-    while (i != ex) {
-        if (board[i][j]) return false;
-        i += r; j += c;
-    }
-
-    if (board[ex][ey] && board[ex][ey]->isWhite() == isWhite())
+Bishop::Bishop(char color, int row, int col) : Piece(color, row, col) { // Becaose inheriting from piece, initializer list is necessary
+}
+char Bishop::get_symbol() {
+    return 'B';
+}
+bool Bishop::is_valid_move(int to_row, int to_col, Piece* board[8][8]) {
+    if (abs(to_row - row) != abs(to_col - col)) { // Bishop can move just diagonally
         return false;
-
-    return true;
+    }
+    int row_dir;
+    int col_dir;
+    if (to_row > row) {
+        row_dir = 1;
+    } else {
+        row_dir = -1;
+    }
+    if (to_col > col) {
+        col_dir = 1;
+    } else {
+        col_dir = -1;
+    }
+    int r = row + row_dir;
+    int c = col + col_dir;
+    while (r != to_row && c != to_col) { // go untill the destination square(not included)
+        if (board[r][c] != NULL) { // checking whether the whole path is free or captured
+            return false;
+        }
+        r = r + row_dir;
+        c = c + col_dir;
+    }
+    if (board[to_row][to_col] != NULL && board[to_row][to_col]->get_color() == color) { // can't capture our own solider
+        return false; // through colour, solider can be recognized
+    }
+    return true; // means the solider of opponent will be arrested
 }
