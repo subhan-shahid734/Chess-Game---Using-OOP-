@@ -104,7 +104,7 @@ void Game::showTurnMessage() {
         cout << "BLACK TURN\n";
 
     cout << "Enter move like: e2 e4\n";
-    cout << "=================================\n";
+    cout << "\n=================================\n";
 }
 
 void Game::start() {
