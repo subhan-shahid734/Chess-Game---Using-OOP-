@@ -1,27 +1,40 @@
 #include "Pawn.h"
 #include <cstdlib>
-
-Pawn::Pawn(char c) :Piece(c) {}
-
-bool Pawn::isWhite() { return color == 'W'; }
-
-char Pawn::getSymbol() { return (color == 'W') ? 'P' : 'p'; }
-
-bool Pawn::is_valid_move(int sx, int sy, int ex, int ey, Piece* board[8][8]) {
-
-    int dir = (color == 'W') ? -1 : 1;
-    int start = (color == 'W') ? 6 : 1;
-
-    if (sy == ey && ex == sx + dir && board[ex][ey] == nullptr)
+Pawn::Pawn(char color, int row, int col) : Piece(color, row, col) { // Becaose inheriting from piece, initializer list is necessary
+}
+char Pawn::get_symbol() {
+    return 'P';
+}
+bool Pawn::is_valid_move(int to_row, int to_col, Piece* board[8][8]) {
+    int dir;
+    int start_row;
+    if (color == 'W') {
+        dir = -1; // white moves upwward
+        start_row = 6;
+    } else {
+        dir = 1; // black moves downwward
+        start_row = 1;
+    }
+    if (to_col == col && to_row == row + dir) {
+        if (board[to_row][to_col] != NULL) { // Pawn cannoot capture forward
+            return false;
+        }
         return true;
-
-    if (sy == ey && sx == start && ex == sx + 2 * dir &&
-        board[sx + dir][sy] == nullptr && board[ex][ey] == nullptr)
+    }
+    if (to_col == col && row == start_row && to_row == row + 2 * dir) { // two steps only from starting row
+        if (board[row + dir][col] != NULL) {
+            return false;
+        }
+        if (board[to_row][to_col] != NULL) {
+            return false;
+        }
         return true;
-
-    if (abs(ey - sy) == 1 && ex == sx + dir &&
-        board[ex][ey] && board[ex][ey]->isWhite() != isWhite())
-        return true;
-
+    }
+    if (abs(to_col - col) == 1 && to_row == row + dir) {
+        if (board[to_row][to_col] != NULL && board[to_row][to_col]->get_color() != color) { // enimy must be present to capture diagonaly
+            return true;
+        }
+        return false;
+    }
     return false;
 }
