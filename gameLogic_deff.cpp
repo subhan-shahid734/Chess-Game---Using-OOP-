@@ -1,5 +1,5 @@
 #include "gameLogic.h"
-void Game::input(int& sx, int &sy, int &ex, int &ey)
+void Game::input(int& sx, int &sy, int &ex, int &ey) // Took input as string like d5 then convert to int
 {
 	string f, t;
 	do
@@ -15,7 +15,7 @@ void Game::input(int& sx, int &sy, int &ex, int &ey)
 	} while ((f.length()>2 || t.length()>2)&&(f[0]>'f' || f[0]<'a') 
 		&&(f[1]<'1'||f[1]>'8')&& (t[0] > 'f' || t[0] < 'a')&& (f[1] < '1' || f[1]>'8'));
 }
-bool Game::canMove(int& sx, int& sy, int& ex, int& ey)
+bool Game::canMove(int& sx, int& sy, int& ex, int& ey) // check general validation
 {
 	if (board[sx][sy] == nullptr)
 		return false;
@@ -27,20 +27,20 @@ bool Game::canMove(int& sx, int& sy, int& ex, int& ey)
 		return false;
 	return true;
 }
-void Game::doMove(int& sx, int& sy, int& dx, int& dy)
+void Game::doMove(int& sx, int& sy, int& dx, int& dy) // Move object
 {
 	board[dx][dy] = board[sx][sy];
 	board[sx][sy] = nullptr;
-	white = false;
+	//white = false;
 }
-bool Game::isKingInDanger(bool whiteColor)
+bool Game::isKingInDanger(bool Color)
 {
 	int kx, int ky;
 	for (int i =0 ;i<8 ; i++)
 	{
 		for (int j =0;j<8 ; j++)
 		{
-			if ((board[i][j]) != nullptr && board[i][j]->isWhite() == whiteColor
+			if ((board[i][j]) != nullptr && board[i][j]->isWhite() == Color
 				&& board[i][j]->getSymbol() == 'k')
 			{
 				kx = i;
@@ -52,7 +52,7 @@ bool Game::isKingInDanger(bool whiteColor)
 	{
 		for (int l = 0 ;l<8 ; l++)
 		{
-			if (board[k][l] != nullptr && board[k][l]->isWhite() != whiteColor)
+			if (board[k][l] != nullptr && board[k][l]->isWhite() != Color)
 			{
 				if (board[k][l]->isValidMove(k, l, kx, ky, board))
 					return true;
@@ -61,7 +61,7 @@ bool Game::isKingInDanger(bool whiteColor)
 	}
 	return false;
 }
-bool Game::isMoveSafe(int& sx, int& sy, int& ex, int& ey)
+bool Game::isMoveSafe(int& sx, int& sy, int& ex, int& ey) // this func checks if your move keep your king in deanger
 {
 	Piece* temp = board[ex][ey];
 	board[ex][ey] = board[sx][sy];
@@ -73,19 +73,19 @@ bool Game::isMoveSafe(int& sx, int& sy, int& ex, int& ey)
 	board[ex][ey] = temp;
 	return s;
 }
-bool Game::isKingDead(bool whiteColor)
+bool Game::isKingDead(bool Color)
 {
 	for (int i = 0;i < 8; i++)
 	{
 		for (int j = 0;j < 8; j++)
 		{
-			if (board[i][j] && board[i][j]->isWhite() == whiteColor)
+			if (board[i][j]!=nullptr && board[i][j]->isWhite() == Color)
 			{
 				for (int m = 0;m < 8; m++)
 				{
 					for (int n = 0;n < 8; n++)
 					{
-						if (board[m][n]->isValidMove(i, j, m, n, board) && canMove(i, j, m, n))
+						if (canMove(i, j, m, n) && board[m][n]->isValidMove(i, j, m, n, board))
 						{
 							if (isMoveSafe(i, j, m, n))
 								return false;
